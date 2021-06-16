@@ -1,3 +1,7 @@
+if exist('Statistics.png', 'file') == 2
+    delete('Statistics.png')
+end
+
 bagFilePath     = '~/.ros/KartoSLAM__2021-06-07-19-36-26.bag';
 cpuMonitorTopic = '/cpu_monitor/slam_karto/cpu';
 memMonitorTopic = '/cpu_monitor/slam_karto/mem';
@@ -12,18 +16,20 @@ MEM_messages = readMessages(SLAM_MEM_Topic, 'DataFormat','struct');
 
 CPU_Data = cellfun(@(m) double(m.Data), CPU_messages);
 MEM_Data = cellfun(@(m) double(m.Data), MEM_messages);
-
+MEM_Data_MB = MEM_Data/(1024*1024);                                        % RAM Memory usage in MB
 
 % Generate a figure with all the relevant statistics
 f = figure('visible','off');
 subplot(2,2,1)
 plot(CPU_Data)
 ylabel('CPU usage (%)') 
-title("CPU")
+xlabel('Sample') 
+title("CPU usage (%)")
 subplot(2,2,2)
-plot(MEM_Data)
-ylabel('MEM usage (bytes)') 
-title("MEM")
+plot(MEM_Data_MB)
+ylabel('Memory usage (MB)') 
+xlabel('Sample')  
+title("Memory usage (MB)")
 subplot(2,2,3)
 text(0,0.96,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  ); axis off
 text(0,0.95,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  ); axis off
@@ -44,18 +50,18 @@ text(0,0.25,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  );
 subplot(2,2,4)
 text(0,0.96,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  ); axis off
 text(0,0.95,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  ); axis off
-text(0,0.8 ,"Mean: "                   ); axis off
-text(0.4,0.8, string(mean(MEM_Data))   ); axis off
-text(0,0.7 ,"Samples: "                ); axis off
-text(0.4,0.7, string(length(MEM_Data)) ); axis off
-text(0,0.6 ,"Stdev: "                  ); axis off
-text(0.4,0.6, string(std(MEM_Data))    ); axis off
-text(0,0.5 ,"Min: "                    ); axis off
-text(0.4,0.5, string(min(MEM_Data))    ); axis off
-text(0,0.4 ,"Max: "                    ); axis off
-text(0.4,0.4, string(max(MEM_Data))    ); axis off
-text(0,0.3 ,"Mode: "                   ); axis off
-text(0.4,0.3, string(mode(MEM_Data))   ); axis off
+text(0,0.8 ,"Mean: "                    ); axis off
+text(0.4,0.8, string(mean(MEM_Data_MB)) ); axis off
+text(0,0.7 ,"Samples: "                 ); axis off
+text(0.4,0.7, string(length(MEM_Data))  ); axis off
+text(0,0.6 ,"Stdev: "                   ); axis off
+text(0.4,0.6, string(std(MEM_Data_MB))  ); axis off
+text(0,0.5 ,"Min: "                     ); axis off
+text(0.4,0.5, string(min(MEM_Data_MB))  ); axis off
+text(0,0.4 ,"Max: "                     ); axis off
+text(0.4,0.4, string(max(MEM_Data_MB))  ); axis off
+text(0,0.3 ,"Mode: "                    ); axis off
+text(0.4,0.3, string(mode(MEM_Data_MB)) ); axis off
 text(0,0.26,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  ); axis off
 text(0,0.25,"\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_"  ); axis off
 saveas(f,'Statistics','png')
